@@ -167,24 +167,26 @@ jobs:
       # Here's where you will add some code to rollback on failure    
       - destroy-environment   
 
-#   configure-infrastructure:
-#     docker:
-#       # Docker image here that supports Ansible
-#     steps:
-#       # Checkout code from git
-#       # Add ssh keys with fingerprint
-#       # attach workspace
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             # Your code here
-#             exit 1
-#       - run:
-#           name: Configure server
-#           command: |
-#             # Your code here
-#             exit 1
-#       # Here's where you will add some code to rollback on failure      
+  configure-infrastructure:
+    docker:
+      - image: python:3.11.5-alpine3.18
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["cf:02:eb:84:66:54:fc:64:6a:f8:cc:c6:00:11:1c:a7"] 
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update tar gzip ansible
+      - run:
+          name: Configure server
+          command: |
+            cd .circleci/ansible
+            cat inventory.txt
+            ansible-playbook -i inventory.txt configure-server.yml
+      - destroy-environment      
 
 #   run-migrations:
 #     docker:
@@ -314,11 +316,11 @@ workflows:
           requires: [build-frontend]
       - deploy-infrastructure:
           requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          # filters:
-          #   branches:
-          #     only: [test-feature-branch]
-      # - configure-infrastructure:
-      #     requires: [deploy-infrastructure]
+          filters:
+            branches:
+              only: [master]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
       # - run-migrations:
       #     requires: [configure-infrastructure]
       # - deploy-frontend:
