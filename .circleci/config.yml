@@ -222,7 +222,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update nodejs npm tar aws-cli ansible curl
+            yum install -y nodejs npm tar ansible curl
       - run:
           name: Get backend url
           command: |
