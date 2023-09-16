@@ -1,6 +1,14 @@
 version: 2.1
 
 commands:
+  install_nodejs:
+    description: Install Node.js 13
+    steps:
+      - run:
+          name: Install Node.js 13
+          command: |
+            curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+            sudo apt install -y nodejs
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
@@ -214,15 +222,16 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: python:3.11.5-alpine3.18
+      - image: amazon/aws-cli
     steps:
       - checkout
+      - install_nodejs
       - restore_cache:
           keys: [frontend-build]
       - run:
           name: Install dependencies
           command: |
-            apk add --update tar gzip aws-cli ansible nodejs npm curl
+            yum install -y tar gzip curl
       - run:
           name: Get backend url
           command: |
