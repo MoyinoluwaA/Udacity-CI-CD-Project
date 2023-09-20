@@ -1,25 +1,25 @@
 ---
 - name: "Creates backend app directory"
   file:
-    path: ~/backend-app
+    path: /home/ubuntu/backend-app
     state: directory
 
 - name: Copy backend files
   become: true
   copy:
     src: /root/project/artifact.tar.gz
-    dest: ~/backend-app/
+    dest: /home/ubuntu/backend-app/
 
 - name: "Check for tar file"
   become: true
   command:
-    ls -l ~/backend-app/artifact.tar.gz
+    ls -l /home/ubuntu/backend-app/artifact.tar.gz
 
 - name: "Unarchive backend files"
   unarchive:
     remote_src: true
-    src: ~/backend-app/artifact.tar.gz
-    dest: ~/backend-app
+    src: /home/ubuntu/backend-app/artifact.tar.gz
+    dest: /home/ubuntu/backend-app
 
 - name: "Installing Node Dependencies"
   shell: |

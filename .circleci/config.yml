@@ -272,7 +272,6 @@ jobs:
             ## Zip the directory
             pwd
             tar -czvf artifact.tar.gz backend
-            ls
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
@@ -300,11 +299,15 @@ jobs:
           name: Backend smoke test.
           command: |
             export API_URL="http://${BACKEND_IP}:3030"
-            echo "${API_URL}"
+            echo "------------------------------------"
+            echo BACKEND_URL: ${API_URL}:3030/api/status
+            echo "------------------------------------"
             if curl "${API_URL}/api/status" | grep "ok"
             then
+              echo "Backend Smoke Test Success"
               return 0
             else
+              echo "Backend Smoke Test Failed"
               return 1
             fi
       - run:
@@ -314,9 +317,10 @@ jobs:
             echo ${URL} 
             if curl -s ${URL} | grep "Welcome"
             then
-              # Change this to 0 after the job fails
+              echo "Frontend Smoke Test Success"
               return 1
             else
+              echo "Frontend Smoke Test Failed"
               return 1
             fi
       - destroy-environment 
@@ -379,12 +383,12 @@ workflows:
           requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
-      # - deploy-frontend:
-      #     requires: [run-migrations]
+      - deploy-frontend:
+          requires: [run-migrations]
       - deploy-backend:
           requires: [run-migrations]
-      # - smoke-test:
-      #     requires: [deploy-backend, deploy-frontend]
+      - smoke-test:
+          requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
       #     requires: [smoke-test]
       # - cleanup:
