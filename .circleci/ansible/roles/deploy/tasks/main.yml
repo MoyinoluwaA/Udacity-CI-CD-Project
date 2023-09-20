@@ -1,39 +1,43 @@
 ---
-- name: "Creates backend app directory"
-  file:
-    path: /home/ubuntu/backend-app
-    state: directory
-
-- name: Copy backend files
+- name: "update apt packages."
   become: true
+  apt:
+    update_cache: yes
+
+- name: "upgrade packages"
+  become: true
+  apt:
+    upgrade: yes
+
+- name: "install dependencies."
+  become: true
+  apt:
+    name: ["tar", "nodejs", "npm"]
+    state: latest
+    update_cache: yes
+
+- name: "install pm2"
+  become: true
+  npm:
+    name: pm2
+    global: yes
+    production: yes
+    state: present
+
+- name: "Copy artifact to home"
   copy:
-    src: /root/project/artifact.tar.gz
-    dest: /home/ubuntu/backend-app/
+    src: artifact.tar.gz
+    dest: /home/ubuntu/artifact.tar.gz
+    backup: yes
 
-- name: "Check for tar file"
-  become: true
-  command:
-    ls -l /home/ubuntu/backend-app/artifact.tar.gz
-
-- name: "Unarchive backend files"
+- name: "Unarchive files"
   unarchive:
-    remote_src: true
-    src: /home/ubuntu/backend-app/artifact.tar.gz
-    dest: /home/ubuntu/backend-app
-
-- name: "Installing Node Dependencies"
-  shell: |
-    cd /home/ubuntu
-    echo 'in /home/ubuntu'
-    ls
-    cd /home/ubuntu/backend-app
-     echo 'in /home/ubuntu/backend-app'
-    ls
-    npm install
+    src: artifact.tar.gz
+    dest: /home/ubuntu
 
 - name: "Executing Node app with PM2"
   shell: |
-    cd /home/ubuntu/backend-app/dist
+    cd /home/ubuntu/
     pm2 stop default
     pm2 start main.js
   register: execute_node
