@@ -332,7 +332,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update tar gzip
+            yum install -y tar gzip
       - run:
           name: Update cloudfront distribution
           command: |
