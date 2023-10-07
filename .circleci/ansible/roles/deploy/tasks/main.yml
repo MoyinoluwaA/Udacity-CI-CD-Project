@@ -8,11 +8,22 @@
   become: true
   apt:
     upgrade: yes
+  
+- name: Install the gpg key for nodejs 13
+  apt_key:
+    url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
+    state: present
+    
+- name: Install the nodejs 13 repos
+  apt_repository:
+    repo: "deb https://deb.nodesource.com/node_13.x {{ ansible_distribution_release }} main"
+    state: present
+    update_cache: yes
 
 - name: "install nodejs"
   become: true
   apt:
-    name: nodejs=13.8.0
+    name: nodejs
     update_cache: yes
 
 - name: "install dependencies."
