@@ -20,7 +20,7 @@ commands:
     parameters:
       Workflow_ID:
         type: string
-        default: ${CIRCLE_WORKFLOW_ID:0:7} 
+        default: 2be446d 
     steps:
       - run:
           name: Revert migrations
@@ -248,7 +248,7 @@ jobs:
             tar -czvf artifact-2be446d.tar.gz dist
             aws s3 cp dist s3://udapeople-2be446d --recursive
       # - destroy-environment 
-      # - revert-migrations      
+      - revert-migrations      
                     
   deploy-backend:
     docker:
@@ -280,7 +280,7 @@ jobs:
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml -vvv
       # - destroy-environment 
-      # - revert-migrations  
+      - revert-migrations  
 
   smoke-test:
     docker:
