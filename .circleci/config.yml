@@ -282,13 +282,13 @@ jobs:
 
   smoke-test:
     docker:
-      - image: python:3.11.5-alpine3.18 
+      - image: node:13.8.0-alpine 
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            apk add --update curl aws-cli nodejs npm
+            apk add --update curl aws-cli npm
       - run:
           name: Backend smoke test.
           command: |
